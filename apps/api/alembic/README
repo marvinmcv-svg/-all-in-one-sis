@@ -1,0 +1,72 @@
+# Alembic Migration Directory
+
+This directory contains database migration scripts for the All-in-One SIS project.
+
+## Directory Structure
+
+```
+alembic/
+├── env.py           # Migration environment configuration
+├── script.py.mako  # Template for new migration files
+├── README          # This file
+└── versions/       # Individual migration scripts
+```
+
+## Migration Commands
+
+### Create a new migration
+```bash
+cd apps/api
+alembic revision --autogenerate -m "description"
+```
+
+### Apply all migrations
+```bash
+cd apps/api
+alembic upgrade head
+```
+
+### Rollback last migration
+```bash
+cd apps/api
+alembic downgrade -1
+```
+
+### Rollback to specific revision
+```bash
+cd apps/api
+alembic downgrade <revision_id>
+```
+
+### Show current migration
+```bash
+cd apps/api
+alembic current
+```
+
+### Show migration history
+```bash
+cd apps/api
+alembic history
+```
+
+### Show SQL for pending migrations (without running)
+```bash
+cd apps/api
+alembic upgrade --sql
+```
+
+## Using Make Commands
+
+From project root:
+```bash
+make migrate                  # Apply all migrations
+make create-migration msg=    # Create new migration
+make rollback                # Rollback last migration
+```
+
+## Notes
+
+- All models are imported in `env.py` to ensure autogenerate detects all changes
+- The migration environment uses async SQLAlchemy engine
+- Target metadata comes from `app.models.base.Base`

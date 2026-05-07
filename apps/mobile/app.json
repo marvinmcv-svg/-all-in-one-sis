@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "All-in-One SIS",
+    "slug": "all-in-one-sis",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.school.allinonesis"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.school.allinonesis"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
