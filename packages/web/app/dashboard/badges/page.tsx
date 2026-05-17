@@ -4,6 +4,11 @@ import useSWR from 'swr'
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json())
 
+interface EarnedBadge {
+  badgeKey: string
+  earnedAt: string
+}
+
 const ALL_BADGES = [
   { key: 'day_1', emoji: '🌱', title: '24 Hours', desc: 'One full day clean', category: 'Time' },
   { key: 'day_3', emoji: '🌿', title: 'Three Days', desc: 'Three days clean', category: 'Time' },
@@ -23,26 +28,39 @@ const ALL_BADGES = [
 ]
 
 export default function BadgesPage() {
-  const { data } = useSWR('/api/v1/dashboard/stats', fetcher)
-  const earnedKeys = new Set<string>()
+  const { data } = useSWR<{ data: EarnedBadge[] }>('/api/v1/dashboard/badges', fetcher)
+  const earned = data?.data ?? []
+  const earnedKeys = new Set(earned.map((b) => b.badgeKey))
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Badges</h1>
-      <p className="text-gray-600">{earnedKeys.size} / {ALL_BADGES.length} earned</p>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Badges</h1>
+        <p className="text-gray-500 text-sm mt-1">{earnedKeys.size} / {ALL_BADGES.length} earned</p>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {ALL_BADGES.map((badge) => {
-          const earned = earnedKeys.has(badge.key)
+          const isEarned = earnedKeys.has(badge.key)
           return (
             <div
               key={badge.key}
-              className={`bg-white rounded-2xl p-6 text-center shadow-sm transition-all ${earned ? 'ring-2 ring-green-400' : 'opacity-50 grayscale'}`}
+              className={`bg-white rounded-2xl p-6 text-center shadow-sm transition-all duration-300 ${
+                isEarned ? 'ring-2 ring-green-400 shadow-green-100' : 'opacity-40 grayscale'
+              }`}
             >
-              <div className="text-4xl mb-3">{badge.emoji}</div>
-              <div className="font-semibold text-gray-900 mb-1">{badge.title}</div>
-              <div className="text-xs text-gray-500">{badge.desc}</div>
-              {earned && <div className="mt-2 text-xs text-green-600 font-medium">Earned ✓</div>}
+              <div className={`text-4xl mb-3 transition-transform ${isEarned ? 'scale-110' : ''}`}>
+                {badge.emoji}
+              </div>
+              <div className="font-semibold text-gray-900 mb-1 text-sm">{badge.title}</div>
+              <div className="text-xs text-gray-500 leading-snug">{badge.desc}</div>
+              {isEarned ? (
+                <div className="mt-3 text-xs text-green-600 font-medium bg-green-50 rounded-full px-2 py-0.5">
+                  ✓ Earned
+                </div>
+              ) : (
+                <div className="mt-3 text-xs text-gray-400">Locked</div>
+              )}
             </div>
           )
         })}

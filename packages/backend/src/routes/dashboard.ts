@@ -121,6 +121,15 @@ dashboardRouter.get('/weekly-chart', async (req, res) => {
   }
 })
 
+dashboardRouter.get('/badges', async (req, res) => {
+  try {
+    const userBadges = await db.select().from(badges).where(eq(badges.userId, req.user!.id))
+    res.json({ success: true, data: userBadges, error: null })
+  } catch {
+    res.status(500).json({ success: false, data: null, error: 'Failed to fetch badges' })
+  }
+})
+
 dashboardRouter.get('/insights', async (req, res) => {
   try {
     const userId = req.user!.id

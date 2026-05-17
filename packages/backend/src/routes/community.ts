@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { db, communityPosts, communityComments, users } from '@clearpath/db'
-import { eq, desc, and } from 'drizzle-orm'
+import { eq, desc, and, sql } from 'drizzle-orm'
 import { requireUser } from '../middleware/auth.js'
 import xss from 'xss'
 
@@ -147,7 +147,7 @@ communityRouter.post('/posts/:id/comments', async (req, res) => {
     })
 
     await db.update(communityPosts)
-      .set({ commentCount: db.select().from(communityComments).where(eq(communityComments.postId, req.params['id']!)).then as never })
+      .set({ commentCount: sql`${communityPosts.commentCount} + 1` })
       .where(eq(communityPosts.id, req.params['id']!))
 
     res.status(201).json({ success: true, data: comment, error: null })
