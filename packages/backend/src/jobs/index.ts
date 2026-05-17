@@ -1,9 +1,13 @@
 import { Queue, Worker } from 'bullmq'
 
 const redisConnection = {
-  host: process.env['UPSTASH_REDIS_REST_URL'] ?? 'localhost',
-  port: 6379,
+  host: process.env['UPSTASH_REDIS_HOST'] ?? 'localhost',
+  port: parseInt(process.env['UPSTASH_REDIS_PORT'] ?? '6379'),
+  password: process.env['UPSTASH_REDIS_PASSWORD'],
+  tls: process.env['NODE_ENV'] === 'production' ? {} : undefined,
 }
+
+export const bullmqRedisConnection = redisConnection
 
 export const cravingPredictorQueue = new Queue('craving-predictor', { connection: redisConnection })
 export const pushNotificationsQueue = new Queue('push-notifications', { connection: redisConnection })

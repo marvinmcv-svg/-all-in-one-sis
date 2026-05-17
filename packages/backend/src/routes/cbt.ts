@@ -3,6 +3,8 @@ import { db, cbtModules } from '@clearpath/db'
 import { eq, and } from 'drizzle-orm'
 import { requireUser } from '../middleware/auth.js'
 import xss from 'xss'
+import { generateCBTFeedback } from '@clearpath/ai-pipeline'
+import { badgeEvaluatorQueue } from '../jobs/index.js'
 
 export const cbtRouter = Router()
 cbtRouter.use(requireUser)
@@ -135,6 +137,21 @@ cbtRouter.post('/:id/complete', async (req, res) => {
         .set({ completedAt: new Date(), responseText: xss(responseText) })
         .where(eq(cbtModules.id, existing[0]!.id))
         .returning()
+
+      // Generate AI feedback asynchronously
+      generateCBTFeedback(lessonInfo.exerciseType, xss(responseText), lessonInfo.weekNumber)
+        .then(async (feedback) => {
+          if (feedback && existing.length > 0) {
+            await db.update(cbtModules).set({ aiFeedback: feedback }).where(eq(cbtModules.id, existing[0]!.id))
+          } else if (feedback && updated) {
+            await db.update(cbtModules).set({ aiFeedback: feedback }).where(eq(cbtModules.id, updated.id))
+          }
+        })
+        .catch((err) => console.error('CBT feedback generation failed:', err))
+
+      // Queue badge evaluation
+      await badgeEvaluatorQueue.add('evaluate', { userId: req.user!.id })
+
       res.json({ success: true, data: updated, error: null })
     } else {
       const [created] = await db.insert(cbtModules).values({
@@ -147,6 +164,21 @@ cbtRouter.post('/:id/complete', async (req, res) => {
         completedAt: new Date(),
         responseText: xss(responseText),
       }).returning()
+
+      // Generate AI feedback asynchronously
+      generateCBTFeedback(lessonInfo.exerciseType, xss(responseText), lessonInfo.weekNumber)
+        .then(async (feedback) => {
+          if (feedback && existing.length > 0) {
+            await db.update(cbtModules).set({ aiFeedback: feedback }).where(eq(cbtModules.id, existing[0]!.id))
+          } else if (feedback && created) {
+            await db.update(cbtModules).set({ aiFeedback: feedback }).where(eq(cbtModules.id, created.id))
+          }
+        })
+        .catch((err) => console.error('CBT feedback generation failed:', err))
+
+      // Queue badge evaluation
+      await badgeEvaluatorQueue.add('evaluate', { userId: req.user!.id })
+
       res.status(201).json({ success: true, data: created, error: null })
     }
   } catch {

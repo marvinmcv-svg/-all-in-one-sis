@@ -3,6 +3,7 @@ import { db, cravingLogs, usageLogs } from '@clearpath/db'
 import { eq, desc, gte, lte, and, sql } from 'drizzle-orm'
 import { requireUser } from '../middleware/auth.js'
 import xss from 'xss'
+import { badgeEvaluatorQueue } from '../jobs/index.js'
 
 export const cravingRouter = Router()
 
@@ -34,6 +35,9 @@ cravingRouter.post('/', async (req, res) => {
       notes: notes ? xss(notes) : null,
       loggedAt: loggedAt ? new Date(loggedAt) : new Date(),
     }).returning()
+
+    // Evaluate badges in the background
+    badgeEvaluatorQueue.add('evaluate', { userId: req.user!.id }).catch(() => {})
 
     res.status(201).json({ success: true, data: log, error: null })
   } catch {

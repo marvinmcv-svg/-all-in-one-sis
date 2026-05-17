@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import { startScheduler, workers } from './jobs/scheduler.js'
 import { userRouter } from './routes/users.js'
 import { cravingRouter } from './routes/cravings.js'
 import { journalRouter } from './routes/journal.js'
@@ -33,3 +34,15 @@ app.use(errorHandler)
 
 const PORT = process.env['PORT'] ?? 3001
 app.listen(PORT, () => console.log(`Backend running on :${PORT}`))
+
+// Start background job workers and cron scheduler
+if (process.env['NODE_ENV'] !== 'test') {
+  startScheduler().catch(console.error)
+}
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('Shutting down gracefully...')
+  await Promise.all(workers.map((w) => w.close()))
+  process.exit(0)
+})

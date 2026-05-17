@@ -2,6 +2,8 @@ import { Router } from 'express'
 import { db, cravingLogs, badges, healthMilestones } from '@clearpath/db'
 import { eq, gte, and, desc } from 'drizzle-orm'
 import { requireUser } from '../middleware/auth.js'
+import { getCached } from '../cache/redis.js'
+import { weeklyInsightQueue } from '../jobs/index.js'
 
 export const dashboardRouter = Router()
 dashboardRouter.use(requireUser)
@@ -120,12 +122,30 @@ dashboardRouter.get('/weekly-chart', async (req, res) => {
 })
 
 dashboardRouter.get('/insights', async (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      insight: 'Keep up the great work! Your craving resistance is improving. You\'ve beaten more cravings this week than last week.',
-      generatedAt: new Date().toISOString(),
-    },
-    error: null
-  })
+  try {
+    const userId = req.user!.id
+
+    // Check cache first (populated by weekly-insight job)
+    const cached = await getCached<{ insight: string; generatedAt: string }>(`weekly-insight:${userId}`)
+    if (cached) {
+      res.json({ success: true, data: cached, error: null })
+      return
+    }
+
+    // Queue generation for premium users
+    if (req.user!.subscriptionTier !== 'FREE') {
+      await weeklyInsightQueue.add('generate-for-user', { userId })
+    }
+
+    res.json({
+      success: true,
+      data: {
+        insight: "Your weekly insight is being generated. Check back soon!",
+        generatedAt: new Date().toISOString(),
+      },
+      error: null
+    })
+  } catch {
+    res.status(500).json({ success: false, data: null, error: 'Failed to fetch insights' })
+  }
 })
