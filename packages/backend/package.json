@@ -22,7 +22,8 @@
     "@clerk/clerk-sdk-node": "^5.0.0",
     "postmark": "^4.0.2",
     "expo-server-sdk": "^3.9.0",
-    "xss": "^1.0.15"
+    "xss": "^1.0.15",
+    "@anthropic-ai/sdk": "^0.24.0"
   },
   "devDependencies": {
     "tsx": "^4.7.0",

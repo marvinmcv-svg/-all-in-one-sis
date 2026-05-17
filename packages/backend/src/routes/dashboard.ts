@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { db, cravingLogs, badges, healthMilestones } from '@clearpath/db'
+import { db, cravingLogs, badges, healthMilestones, nicotineProfiles } from '@clearpath/db'
 import { eq, gte, and, desc } from 'drizzle-orm'
 import { requireUser } from '../middleware/auth.js'
 import { getCached } from '../cache/redis.js'
@@ -39,9 +39,9 @@ dashboardRouter.get('/stats', async (req, res) => {
         : null,
     }))
 
-    const nicotineProfile = user.substanceType === 'NICOTINE' || user.substanceType === 'BOTH'
-      ? await db.query?.nicotineProfiles?.findFirst?.({ where: eq(db._.schema?.nicotineProfiles?.userId ?? 'user_id' as never, user.id) })
-      : null
+    const [nicotineProfile] = user.substanceType === 'NICOTINE' || user.substanceType === 'BOTH'
+      ? await db.select().from(nicotineProfiles).where(eq(nicotineProfiles.userId, user.id)).limit(1)
+      : []
 
     const dailyCost = nicotineProfile ? nicotineProfile.costPerUnit * nicotineProfile.dailyUsageAmount : 0
     const moneySavedCents = Math.round(daysClean * dailyCost * 100)

@@ -4,7 +4,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import { startScheduler, workers } from './jobs/scheduler.js'
 import { userRouter } from './routes/users.js'
-import { cravingRouter } from './routes/cravings.js'
+import { cravingRouter, usageRouter } from './routes/cravings.js'
 import { journalRouter } from './routes/journal.js'
 import { cbtRouter } from './routes/cbt.js'
 import { aiRouter } from './routes/ai.js'
@@ -32,6 +32,7 @@ app.use(requestLogger)
 
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/cravings', cravingRouter)
+app.use('/api/v1/usage', usageRouter)
 app.use('/api/v1/journal', journalRouter)
 app.use('/api/v1/cbt', cbtRouter)
 app.use('/api/v1/ai', aiRouter)
