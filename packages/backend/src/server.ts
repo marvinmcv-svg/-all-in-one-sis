@@ -1,0 +1,35 @@
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import { userRouter } from './routes/users.js'
+import { cravingRouter } from './routes/cravings.js'
+import { journalRouter } from './routes/journal.js'
+import { cbtRouter } from './routes/cbt.js'
+import { aiRouter } from './routes/ai.js'
+import { communityRouter } from './routes/community.js'
+import { dashboardRouter } from './routes/dashboard.js'
+import { webhookRouter } from './routes/webhooks.js'
+import { errorHandler } from './middleware/error.js'
+import { requestLogger } from './middleware/logger.js'
+
+const app = express()
+
+app.use(helmet())
+app.use(cors({ origin: process.env['API_GATEWAY_URL'] }))
+app.use(express.json({ limit: '10mb' }))
+app.use(requestLogger)
+
+app.use('/api/v1/users', userRouter)
+app.use('/api/v1/cravings', cravingRouter)
+app.use('/api/v1/journal', journalRouter)
+app.use('/api/v1/cbt', cbtRouter)
+app.use('/api/v1/ai', aiRouter)
+app.use('/api/v1/community', communityRouter)
+app.use('/api/v1/dashboard', dashboardRouter)
+app.use('/webhooks', webhookRouter)
+app.get('/health', (_, res) => res.json({ status: 'ok' }))
+
+app.use(errorHandler)
+
+const PORT = process.env['PORT'] ?? 3001
+app.listen(PORT, () => console.log(`Backend running on :${PORT}`))

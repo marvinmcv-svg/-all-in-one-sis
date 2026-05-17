@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "ClearPath",
+    "slug": "clearpath",
+    "version": "1.0.0",
+    "scheme": "clearpath",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "bundleIdentifier": "app.clearpath.mobile",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "app.clearpath.mobile"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-notifications",
+      [
+        "expo-build-properties",
+        { "ios": { "newArchEnabled": true }, "android": { "newArchEnabled": true } }
+      ]
+    ]
+  }
+}

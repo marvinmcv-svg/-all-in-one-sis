@@ -1,0 +1,37 @@
+{
+  "name": "@clearpath/web",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@clerk/nextjs": "^5.0.0",
+    "@clearpath/shared-types": "workspace:*",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "recharts": "^2.12.0",
+    "zustand": "^4.5.0",
+    "swr": "^2.2.0",
+    "framer-motion": "^11.0.0",
+    "date-fns": "^3.6.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.3.0",
+    "posthog-js": "^1.131.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.4.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.0.0"
+  }
+}
