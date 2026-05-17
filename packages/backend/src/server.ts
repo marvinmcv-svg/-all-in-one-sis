@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
@@ -13,8 +14,17 @@ import { webhookRouter } from './routes/webhooks.js'
 import { errorHandler } from './middleware/error.js'
 import { requestLogger } from './middleware/logger.js'
 
+Sentry.init({
+  dsn: process.env['SENTRY_DSN'],
+  environment: process.env['NODE_ENV'] ?? 'development',
+  tracesSampleRate: 0.1,
+  integrations: [Sentry.expressIntegration()],
+})
+
 const app = express()
 
+app.use(Sentry.requestHandler())
+app.use(Sentry.tracingHandler())
 app.use(helmet())
 app.use(cors({ origin: process.env['API_GATEWAY_URL'] }))
 app.use(express.json({ limit: '10mb' }))
@@ -30,6 +40,7 @@ app.use('/api/v1/dashboard', dashboardRouter)
 app.use('/webhooks', webhookRouter)
 app.get('/health', (_, res) => res.json({ status: 'ok' }))
 
+app.use(Sentry.errorHandler())
 app.use(errorHandler)
 
 const PORT = process.env['PORT'] ?? 3001

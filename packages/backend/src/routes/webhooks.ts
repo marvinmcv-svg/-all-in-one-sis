@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { createHmac, timingSafeEqual } from 'crypto'
 import { db, users } from '@clearpath/db'
 import { eq } from 'drizzle-orm'
 
@@ -29,19 +30,42 @@ webhookRouter.post('/clerk', async (req, res) => {
   }
 })
 
+function verifyRevenueCatSignature(payload: string, signature: string, secret: string): boolean {
+  try {
+    const expected = createHmac('sha256', secret).update(payload).digest('hex')
+    return timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  } catch {
+    return false
+  }
+}
+
 webhookRouter.post('/revenuecat', async (req, res) => {
   try {
+    const secret = process.env['REVENUECAT_WEBHOOK_SECRET']
+    const signature = req.headers['x-revenuecat-signature'] as string | undefined
+
+    if (secret && signature) {
+      const rawBody = JSON.stringify(req.body)
+      if (!verifyRevenueCatSignature(rawBody, signature, secret)) {
+        res.status(401).json({ success: false, error: 'Invalid signature' })
+        return
+      }
+    }
+
     const { event } = req.body as {
       event: {
         type: string
         app_user_id: string
+        period_type?: string
       }
     }
 
     const tierMap: Record<string, 'FREE' | 'PREMIUM'> = {
-      'INITIAL_PURCHASE': 'PREMIUM',
-      'RENEWAL': 'PREMIUM',
-      'EXPIRATION': 'FREE',
+      INITIAL_PURCHASE: 'PREMIUM',
+      RENEWAL: 'PREMIUM',
+      PRODUCT_CHANGE: 'PREMIUM',
+      EXPIRATION: 'FREE',
+      CANCELLATION: 'FREE',
     }
 
     const newTier = tierMap[event.type]
