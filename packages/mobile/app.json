@@ -49,7 +49,8 @@
       [
         "expo-build-properties",
         { "ios": { "newArchEnabled": true }, "android": { "newArchEnabled": true } }
-      ]
+      ],
+      "react-native-purchases"
     ]
   }
 }

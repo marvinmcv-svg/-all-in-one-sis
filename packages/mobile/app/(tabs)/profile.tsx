@@ -37,7 +37,7 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Subscription</Text>
         <View style={styles.planRow}>
           <Text style={styles.planName}>Free Plan</Text>
-          <TouchableOpacity style={styles.upgradeBtn}>
+          <TouchableOpacity style={styles.upgradeBtn} onPress={() => router.push('/premium/paywall')}>
             <Text style={styles.upgradeBtnText}>Upgrade</Text>
           </TouchableOpacity>
         </View>

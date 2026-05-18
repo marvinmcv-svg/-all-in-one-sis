@@ -5,7 +5,25 @@ import { useState } from 'react'
 
 export default function SettingsPage() {
   const { user } = useUser()
+  const [displayName, setDisplayName] = useState(user?.fullName ?? '')
+  const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  const handleSave = async () => {
+    setSaving(true)
+    setSaved(false)
+    try {
+      await fetch('/api/v1/users/me', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ displayName }),
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -20,9 +38,20 @@ export default function SettingsPage() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
           <input
-            defaultValue={user?.fullName ?? ''}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
             className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
+          >
+            {saving ? 'Saving…' : 'Save Changes'}
+          </button>
+          {saved && <span className="text-sm text-green-600 font-medium">Saved!</span>}
         </div>
       </div>
 
@@ -33,9 +62,9 @@ export default function SettingsPage() {
             <div className="font-medium">Free Plan</div>
             <div className="text-sm text-gray-500">3 AI messages/day, 7-day history</div>
           </div>
-          <button className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700">
+          <a href="/pricing" className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700">
             Upgrade to Premium
-          </button>
+          </a>
         </div>
       </div>
 

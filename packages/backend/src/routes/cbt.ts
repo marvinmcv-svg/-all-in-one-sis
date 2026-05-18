@@ -63,6 +63,7 @@ const CBT_CURRICULUM: Array<{ weekNumber: number; lessonNumber: number; title: s
 cbtRouter.get('/program', async (req, res) => {
   try {
     const userId = req.user!.id
+    const isFree = req.user!.subscriptionTier === 'FREE'
     const userModules = await db.select().from(cbtModules).where(eq(cbtModules.userId, userId))
 
     const program = CBT_CURRICULUM.map((lesson) => {
@@ -75,6 +76,7 @@ cbtRouter.get('/program', async (req, res) => {
         completedAt: userModule?.completedAt ?? null,
         responseText: userModule?.responseText ?? null,
         aiFeedback: userModule?.aiFeedback ?? null,
+        locked: isFree && lesson.weekNumber > 1,
       }
     })
 
@@ -123,6 +125,11 @@ cbtRouter.post('/:id/complete', async (req, res) => {
     const lessonId = req.params['id']!
 
     const lessonInfo = CBT_CURRICULUM.find((_, i) => String(i) === lessonId) ?? CBT_CURRICULUM[0]!
+
+    if (req.user!.subscriptionTier === 'FREE' && lessonInfo.weekNumber > 1) {
+      res.status(403).json({ success: false, data: null, error: 'Weeks 2-6 require a Premium subscription.' })
+      return
+    }
 
     const existing = await db.select().from(cbtModules)
       .where(and(

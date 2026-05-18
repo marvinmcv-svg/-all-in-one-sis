@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { db, journalEntries } from '@clearpath/db'
-import { eq, desc, and, gte, lte } from 'drizzle-orm'
+import { eq, desc, and, gte, lte, count } from 'drizzle-orm'
 import { requireUser } from '../middleware/auth.js'
 import xss from 'xss'
 
@@ -16,6 +16,14 @@ journalRouter.post('/', async (req, res) => {
       substanceType?: 'NICOTINE' | 'CANNABIS' | 'BOTH'
       audioUrl?: string
       transcription?: string
+    }
+
+    if (req.user!.subscriptionTier === 'FREE') {
+      const [{ value }] = await db.select({ value: count() }).from(journalEntries).where(eq(journalEntries.userId, req.user!.id))
+      if (value >= 10) {
+        res.status(403).json({ success: false, data: null, error: 'Free plan is limited to 10 journal entries. Upgrade to Premium for unlimited journaling.' })
+        return
+      }
     }
 
     const [entry] = await db.insert(journalEntries).values({

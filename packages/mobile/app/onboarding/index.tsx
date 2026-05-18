@@ -15,6 +15,7 @@ export default function OnboardingScreen() {
   const [notifications, setNotifications] = useState(true)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { getToken } = useAuth()
 
   const toggleMotivation = (m: string) => {
     setMotivations((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m])
@@ -23,9 +24,13 @@ export default function OnboardingScreen() {
   const handleComplete = async () => {
     setLoading(true)
     try {
+      const token = await getToken()
       await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/v1/users/onboarding`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           step: 6,
           substanceType: substance,
