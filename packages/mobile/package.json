@@ -1,0 +1,32 @@
+{
+  "name": "@clearpath/mobile",
+  "version": "0.1.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
+    "build:ios": "eas build --platform ios",
+    "build:android": "eas build --platform android"
+  },
+  "dependencies": {
+    "expo": "~51.0.0",
+    "expo-router": "~3.5.0",
+    "expo-notifications": "~0.28.0",
+    "expo-secure-store": "~13.0.0",
+    "expo-haptics": "~13.0.0",
+    "react-native": "0.74.0",
+    "@clerk/clerk-expo": "^1.0.0",
+    "@clearpath/shared-types": "workspace:*",
+    "zustand": "^4.5.0",
+    "react-native-reanimated": "~3.10.0",
+    "react-native-gesture-handler": "~2.16.0",
+    "date-fns": "^3.6.0",
+    "react-native-purchases": "^7.0.0",
+    "expo-device": "~6.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "ClearPath — Quit Vaping & Weed",
+  "version": "1.0.0",
+  "description": "Quick craving log and trigger blocker from any browser tab",
+  "permissions": ["storage", "notifications", "alarms", "activeTab", "declarativeNetRequest"],
+  "host_permissions": ["https://clearpath.app/*", "https://api.clearpath.app/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": { "32": "icon32.png" }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "blocked_sites",
+      "enabled": true,
+      "path": "blocked_sites.json"
+    }]
+  }
+}

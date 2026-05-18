@@ -1,0 +1,19 @@
+{
+  "name": "clearpath",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "pnpm --filter @clearpath/db generate",
+    "db:migrate": "pnpm --filter @clearpath/db migrate",
+    "db:studio": "pnpm --filter @clearpath/db studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.0"
+  }
+}

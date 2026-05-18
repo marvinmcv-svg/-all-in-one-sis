@@ -1,0 +1,26 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "pnpm --filter @clearpath/web build",
+  "outputDirectory": "packages/web/.next",
+  "installCommand": "pnpm install",
+  "env": {
+    "NEXT_PUBLIC_APP_URL": "@next_public_app_url",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@next_public_clerk_publishable_key",
+    "CLERK_SECRET_KEY": "@clerk_secret_key",
+    "NEXT_PUBLIC_POSTHOG_KEY": "@next_public_posthog_key",
+    "NEXT_PUBLIC_POSTHOG_HOST": "@next_public_posthog_host",
+    "NEXT_PUBLIC_SENTRY_DSN": "@next_public_sentry_dsn",
+    "SENTRY_AUTH_TOKEN": "@sentry_auth_token",
+    "BACKEND_URL": "@backend_url"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}

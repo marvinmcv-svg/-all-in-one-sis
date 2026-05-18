@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "ClearPath",
+    "slug": "clearpath",
+    "version": "1.0.0",
+    "runtimeVersion": { "policy": "appVersion" },
+    "scheme": "clearpath",
+    "platforms": ["ios", "android"],
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f0fdf4"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "bundleIdentifier": "app.clearpath.mobile",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "ClearPath sends craving alerts and streak reminders to support your recovery journey."
+      }
+    },
+    "android": {
+      "package": "app.clearpath.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#f0fdf4"
+      },
+      "permissions": ["NOTIFICATIONS", "VIBRATE", "RECEIVE_BOOT_COMPLETED"]
+    },
+    "extra": {
+      "eas": { "projectId": "REPLACE_WITH_EAS_PROJECT_ID" }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/REPLACE_WITH_EAS_PROJECT_ID",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#16a34a"
+        }
+      ],
+      [
+        "expo-build-properties",
+        { "ios": { "newArchEnabled": true }, "android": { "newArchEnabled": true } }
+      ],
+      "react-native-purchases"
+    ]
+  }
+}

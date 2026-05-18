@@ -1,0 +1,13 @@
+{
+  "name": "@clearpath/chrome-ext",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc && cp manifest.json popup.html dist/ && cp src/blocked.html dist/ 2>/dev/null || true",
+    "dev": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "typescript": "^5.4.0"
+  }
+}
