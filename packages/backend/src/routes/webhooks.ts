@@ -14,11 +14,19 @@ webhookRouter.post('/clerk', async (req, res) => {
 
     if (type === 'user.created') {
       const email = data.email_addresses[0]?.email_address ?? ''
+      const adjectives = ['Brave', 'Calm', 'Bold', 'Kind', 'Wise', 'Clear', 'Free', 'Strong', 'Bright', 'Steady']
+      const animals = ['Falcon', 'Otter', 'Fox', 'Wolf', 'Bear', 'Hawk', 'Deer', 'Lynx', 'Eagle', 'Crane']
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)]!
+      const animal = animals[Math.floor(Math.random() * animals.length)]!
+      const suffix = Math.floor(Math.random() * 900) + 100
+      const anonymousAlias = `${adj}${animal}${suffix}`
+
       await db.insert(users).values({
         clerkId: data.id,
         email,
         displayName: data.first_name ?? email.split('@')[0] ?? 'User',
         avatarUrl: data.image_url ?? null,
+        anonymousAlias,
       }).onConflictDoNothing()
     } else if (type === 'user.deleted') {
       await db.delete(users).where(eq(users.clerkId, data.id))

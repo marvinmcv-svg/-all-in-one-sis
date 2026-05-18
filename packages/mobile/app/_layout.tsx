@@ -6,6 +6,10 @@ import { useEffect, useRef } from 'react'
 import { StyleSheet } from 'react-native'
 import * as Notifications from 'expo-notifications'
 import { registerForPushNotifications, getRouteFromNotificationData } from '../lib/notifications'
+import Purchases from 'react-native-purchases'
+
+const RC_KEY = process.env['EXPO_PUBLIC_REVENUECAT_API_KEY']
+if (RC_KEY) Purchases.configure({ apiKey: RC_KEY })
 
 const tokenCache = {
   async getToken(key: string) {
